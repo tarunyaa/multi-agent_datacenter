@@ -17,8 +17,6 @@ The goal is to maintain overall data center sustainability by encouraging agents
 ### DataCenterEnvironment Class:
 Simulates the overall environment, coordinating the interaction between GPU agents and the Token Manager.
 Oversees the state of the entire data center, including the global power consumption, workloads, and renewable energy availability.
-At each step, it handles power allocation, agent actions, and reward calculation.
-It also simulates the dynamic pricing of tokens, adjusting token availability and prices based on the state of renewable energy and power consumption.
 
 ## How the System Works:
 Each GPU Agent (RLAgent) learns to balance short-term gains with long-term efficiency, deciding how many tokens to request for power based on its current workload and future uncertainty.
