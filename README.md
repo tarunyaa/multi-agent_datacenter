@@ -1,6 +1,6 @@
 # Optimizing Power Efficiency in Datacenters using Multi-Agent Reinforcement Learning (MARL) with Cerebras
-The inspiration for this project comes from the following paper: “Carbon Connect: An Ecosystem for Sustainable Computing”, co-authored by Professor Lee at the University of Pennsylvania. The paper suggests an intelligent power management system for data centers, known as a cognitive stack system.
-The cognitive stack system would be a multi-agent system where each gpu is modeled as an agent that spends tokens for power. Each agent learns a policy for spending tokens based on their state (workload, power needs, token availability) and the environment’s state (renewable energy availability, token prices). Note that the token prices are dynamic, i.e. that are more expensive when renewable energy is scarce. As a result, the cognitive stack system helps agents to balance immediate performance and long-term resource management. The system leverages Cerebras Wafer-Scale Engine (CSX) for efficient training of the RL agents, allowing for scalability in large-scale data centers.
+The inspiration for this project comes from the following paper: “Carbon Connect: An Ecosystem for Sustainable Computing”, co-authored by Professor Lee at the University of Pennsylvania. The paper suggests an intelligent power management system for data centers, known as a cognitive stack system. <br>
+The cognitive stack system would be a multi-agent system where each gpu is modeled as an agent that spends tokens for power. Each agent learns a policy for spending tokens based on their state (workload, power needs, token availability) and the environment’s state (renewable energy availability, token prices). Note that the token prices are dynamic, i.e. that are more expensive when renewable energy is scarce. As a result, the cognitive stack system helps agents to balance immediate performance and long-term resource management. The system leverages Cerebras Wafer-Scale Engine (CSX) for efficient training of the RL agents, allowing for scalability in large-scale data centers with high-dimensional state spaces. More importantly, Cerbras fast-inference is key to enabling GPU agents to make power management decisions fast enough to handle real-time demands.
 
 ## Class Summaries:
 ### RLAgent Class:
@@ -17,10 +17,3 @@ The goal is to maintain overall data center sustainability by encouraging agents
 ### DataCenterEnvironment Class:
 Simulates the overall environment, coordinating the interaction between GPU agents and the Token Manager.
 Oversees the state of the entire data center, including the global power consumption, workloads, and renewable energy availability.
-
-## How the System Works:
-Each GPU Agent (RLAgent) learns to balance short-term gains with long-term efficiency, deciding how many tokens to request for power based on its current workload and future uncertainty.
-Token Manager allocates tokens dynamically, adjusting the price of tokens based on renewable energy availability.
-Data Center Environment simulates the global interaction between agents and the Token Manager, ensuring that agents' actions affect both their performance and the overall power efficiency of the data center.
-The system scales efficiently using Cerebras' hardware to accelerate RL training across multiple agents, allowing it to handle complex environments with high-dimensional state spaces.
-

@@ -1,5 +1,4 @@
-from simulation import Simulation
-from eia_data import EIADataFetcher
+from simulation import Simulation, EIADataFetcher
 
 if __name__ == "__main__":
     num_gpus = 4
@@ -9,6 +8,7 @@ if __name__ == "__main__":
     # Fetch EIA data
     eia_data = EIADataFetcher(api_key=eia_api_key)
     electricity_data = eia_data.fetch_electricity_data()
+    # Can use predictive ML to forecase electricty prices as well - import a model
 
     # Run simulation
     simulation = Simulation(num_gpus, num_episodes)
