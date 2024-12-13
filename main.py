@@ -1,15 +1,30 @@
-from simulation import Simulation, EIADataFetcher
+from agent import Agent
+from token_manager import TokenManager
+from datacenter_environment import DataCenterEnvironment
 
 if __name__ == "__main__":
-    num_gpus = 4
-    num_episodes = 1000
-    eia_api_key = "YOUR_EIA_API_KEY"
-    
-    # Fetch EIA data
-    eia_data = EIADataFetcher(api_key=eia_api_key)
-    electricity_data = eia_data.fetch_electricity_data()
-    # Can use predictive ML to forecase electricty prices as well - import a model
+    # Simulation setup
+    num_agents = 2
+    token_manager = TokenManager(base_price=1.0, scaling_factor=10)
+    env = DataCenterEnvironment(num_agents, token_manager)
+    agents = [Agent(i) for i in range(num_agents)]
 
-    # Run simulation
-    simulation = Simulation(num_gpus, num_episodes)
-    simulation.run()
+    # Training loop
+    num_epochs = 100
+    for epoch in range(num_epochs):
+        actions = []
+        for agent in agents:
+            state = int(env.states[agent.id])
+            action = agent.select_action(state)
+            actions.append(action)
+
+        rewards = env.step(actions)
+
+        for i, agent in enumerate(agents):
+            state = int(env.states[i])
+            next_state = int(env.states[i])  # Simplified
+            agent.update_q_table(state, actions[i], rewards[i], next_state)
+
+        print(f"Epoch {epoch + 1}, Rewards: {rewards}, Tokens: {token_manager.tokens}")
+
+    print("Training complete!")
