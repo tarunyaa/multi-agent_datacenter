@@ -20,44 +20,37 @@ class DataCenterEnvironment:
         """
         rewards = []
         renewable_energy_availability = self.token_manager.get_renewable_energy_availability()
-        print(f'Total renewable energy = {renewable_energy_availability:.2f} megawatthours')
+        # print(f'Total renewable energy = {renewable_energy_availability:.2f} megawatthours')
         self.token_manager.update_token_price(renewable_energy_availability)
         token_price = self.token_manager.get_token_price()
-        high_power_mode_cost = token_price
-        low_power_mode_cost = token_price / 10
+        high_power_mode_cost = token_price * 2
+        low_power_mode_cost = token_price
         print(f'Token price: {token_price:.2f}')
         
         for i in range(len(self.agents)):
             action = actions[i]
-            if (action == 1):
-                token_cost = high_power_mode_cost
-            else:
-                token_cost = low_power_mode_cost
-            performance_gains = [10, 15]  # Corresponding performance gains 
-
-            if self.states[i] < token_cost:
-                rewards.append(-1)  # Penalty for insufficient tokens, no state change
-                continue
-
             print("action", action)
-            self.states[i] -= token_cost # Spend tokens
-            print(f"performance gains: {performance_gains[action]:.2f}")
-            print(f"token cost: {token_cost:.2f}")
-            immediate_reward = performance_gains[action]
-            print(f"immediate reward: {immediate_reward:.2f}")
-            future_value = self.delta * self.states[i]  # Reward conserving tokens
-            print(f"future value: {future_value:.2f}")
-            rewards.append(immediate_reward + future_value)
+                                    
+            # Reward calculation - consists of immediate reward (10 or 20) due to performance and discounted reward due to conserving tokens
+            if action == 0:
+                self.states[i] -= low_power_mode_cost # Spend tokens
+                reward = 10 + self.delta * self.states[i]
+            else:
+                self.states[i] -= high_power_mode_cost # Spend tokens
+                reward = 20 + self.delta * self.states[i]
+            rewards.append(reward)
+
+            # if self.states[i] < token_cost:
+            #     rewards.append(-1)  # Penalty for insufficient tokens, no state change
+            #     continue
             
             # Replenish tokens based on low power mode usage
-            if renewable_energy_availability < 10000000:  # Trigger replenishment under low renewable energy
-                # Determine the agent with the most low power mode usage
-                most_deferring_agent = max(range(len(self.agents)), key=lambda i: self.agents[i].low_power_mode_count)
-                self.states[most_deferring_agent] += 20  # Reward with extra tokens
-            
-            # Replenish tokens based on low power mode usage
-            if self.agents[i].low_power_mode_count > 1 and self.states[i] < 2:
+            # if renewable_energy_availability < 10000000:  # Trigger replenishment under low renewable energy
+            #     # Determine the agent with the most low power mode usage
+            #     most_deferring_agent = max(range(len(self.agents)), key=lambda i: self.agents[i].low_power_mode_count)
+            #     self.states[most_deferring_agent] += 2  # Reward with extra tokens
+            if self.agents[i].low_power_mode_count >= 1 and self.states[i] < 0:
             # if self.states[i] < 2:
-                self.states[i] += 20
+                self.states[i] += 2
 
         return rewards

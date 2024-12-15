@@ -5,6 +5,8 @@ class Agent:
     def __init__(self, id, max_tokens, num_actions=2):
         self.id = id
         self.max_tokens = max_tokens
+        # TODO: Add more power modes based on workload, power needs of each agent
+        # TODO: Assuming constant workload, can add predictions of power needs
         self.actions = ["normal power mode", "high power mode"] # Numeric action codes: 0 = normal, 1 = high
         self.num_actions = num_actions 
         self.q_table = np.zeros((max_tokens + 1, num_actions))  # State: no. of tokens = token value, Actions: power modes

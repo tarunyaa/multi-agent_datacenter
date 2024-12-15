@@ -7,16 +7,15 @@ import pickle
 
 if __name__ == "__main__":
     # Simulation setup
-    num_agents = 2
-    max_tokens=100
-    scaling_factor = 200000000
-    token_manager = TokenManager(base_price=1.0, scaling_factor=scaling_factor)
+    num_agents = 10
+    max_tokens = 5 
+    token_manager = TokenManager(base_price=1.0)
     agents = [Agent(i, max_tokens) for i in range(num_agents)]
     env = DataCenterEnvironment(agents, token_manager, max_tokens)
-
+    
     # Training parameters
-    num_epochs = 10
-    num_training_episodes = 50
+    num_epochs = 5
+    num_training_episodes = 100
     
     # Exploration parameters
     max_epsilon = 1.0           
@@ -29,15 +28,13 @@ if __name__ == "__main__":
     for episode in range(num_training_episodes):
         print(f"Episode: {episode + 1}")
         env.reset()
-        epsilon = min_epsilon + (max_epsilon - min_epsilon)*np.exp(-decay_rate*episode)
+        # TODO: Change epsilon from linear to exponential decay
+        # epsilon = min_epsilon + (max_epsilon - min_epsilon)*np.exp(-decay_rate*episode)
+        epsilon = max(0.05, 1.0 - episode*0.1)
         # epsilon = 0.01
         epochs_rewards = []
         tokens_left = []
         total_episode_rewards = 0
-        # Reset
-        # epoch = 0
-        # state = env.reset()
-        # done = False
         
         # Training loop
         for epoch in range(num_epochs):
@@ -46,6 +43,7 @@ if __name__ == "__main__":
             for agent in agents:
                 state = int(env.states[agent.id])
                 action = agent.select_action(state, epsilon)
+                agent.record_low_power_mode(action)
                 actions.append(action)
 
             # The environment runs the chosen actions and returns the reward
@@ -65,7 +63,7 @@ if __name__ == "__main__":
             print("-----------------------------------------------------")
             tokens_left.append(sum(env.states))
         total_episode_rewards = sum(rewards)
-        print(f"Episode {episode} Reward: {total_episode_rewards:.2f}")
+        print(f"Episode {episode + 1} Reward: {total_episode_rewards:.2f}")
         episodes_rewards.append(total_episode_rewards)
             
 

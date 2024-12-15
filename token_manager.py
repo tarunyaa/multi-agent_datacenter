@@ -4,9 +4,9 @@ import requests
 eia_url = "https://api.eia.gov/v2/electricity/rto/fuel-type-data/data/?frequency=hourly&data[0]=value&sort[0][column]=period&sort[0][direction]=desc&offset=0&length=5000"
 api_key = "7u9ipw7cMekOHflVsJFVUKVFHlXyhTqnYaO19Aa9"
 class TokenManager:
-    def __init__(self, base_price, scaling_factor):
+    def __init__(self, base_price):
         self.base_price = base_price
-        self.scaling_factor = scaling_factor
+        self.scaling_factor = self.get_renewable_energy_availability() # normalizing token price to 1.0 at the beginning of program
         self.token_price = self.base_price  # Initialize token price
 
     def update_token_price(self, renewable_energy_availability):
