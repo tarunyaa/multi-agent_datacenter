@@ -7,7 +7,7 @@ import pickle
 
 if __name__ == "__main__":
     # Simulation setup
-    num_agents = 10
+    num_agents = 2
     max_tokens = 5 
     token_manager = TokenManager(base_price=1.0)
     agents = [Agent(i, max_tokens) for i in range(num_agents)]
@@ -15,13 +15,14 @@ if __name__ == "__main__":
     
     # Training parameters
     num_epochs = 5
-    num_training_episodes = 100
+    num_training_episodes = 10
     
     # Exploration parameters
     max_epsilon = 1.0           
     min_epsilon = 0.05
     decay_rate = 0.5
     
+    # Recording data
     episodes_rewards = []
     collected_data = [] # To store state-action-reward-next state tuples
     
@@ -65,7 +66,10 @@ if __name__ == "__main__":
         total_episode_rewards = sum(rewards)
         print(f"Episode {episode + 1} Reward: {total_episode_rewards:.2f}")
         episodes_rewards.append(total_episode_rewards)
-            
+
+    # Save data to a file for external training
+    with open("collected_data_test.pkl", "wb") as f:
+        pickle.dump(collected_data, f)   
 
     print("Training complete!")
     # for agent in agents:
@@ -77,10 +81,6 @@ if __name__ == "__main__":
     plt.title("Total Reward per Episode")
     plt.show()
     
-    # Save data to a file for external training
-    with open("collected_data.pkl", "wb") as f:
-        pickle.dump(collected_data, f)
-
     # plt.plot(epochs_rewards)
     # plt.xlabel("Epoch")
     # plt.ylabel("Total Reward")
