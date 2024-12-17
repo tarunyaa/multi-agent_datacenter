@@ -9,33 +9,24 @@ import torch
 import random
 import os
 from cerebras.cloud.sdk import Cerebras
+from cerebras.model_zoo.common.pytorch.model_utils import convert_to_hf
+from transformers import AutoConfig
 
 client = Cerebras(
-  api_key="csk-4x5h68d5vdp98xpydx3nry6thv6893k8fk9xhwk6rk4h3fkm",
+  api_key=os.environ.get("CEREBRAS_API_KEY"),
 )
+
 
 print(client)
 
 # Load trained model
-trained_model = QNetwork()
-trained_model.load_state_dict(torch.load("q_network.pth"))
-trained_model.eval()
+checkpoint = torch.load("q_network.pth")
 
-# Setting up inference via Cerebras
-# Dummy input for export (e.g., batch of state-action pairs)
-dummy_input = torch.randn(1, 2)  # Replace (1, 2) with your input shape
+# Convert to Hugging Face format
+hf_model = convert_to_hf(checkpoint, AutoConfig.from_pretrained("gpt2"))
+# Save the converted model
+hf_model.save_pretrained("converted_model")
 
-# Export to ONNX
-torch.onnx.export(
-    trained_model, 
-    dummy_input, 
-    "q_network.onnx", 
-    input_names=["input"], 
-    output_names=["output"], 
-    dynamic_axes={"input": {0: "batch_size"}, "output": {0: "batch_size"}}
-)
-model = client.models.upload(model_path="q_network.onnx", name="q_network_model")
-deployment = client.deployments.create(model_id=model.id)
 
 # Replace Q-table action selection with DNN inference via pytorch
 def select_action_with_dnn(state, epsilon):
