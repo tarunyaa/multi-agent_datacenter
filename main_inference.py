@@ -34,8 +34,13 @@ torch.onnx.export(
     output_names=["output"], 
     dynamic_axes={"input": {0: "batch_size"}, "output": {0: "batch_size"}}
 )
-model = client.models.upload(model_path="q_network.onnx", name="q_network_model")
-deployment = client.deployments.create(model_id=model.id)
+# Upload model to Cerebras
+# model = client.models.create(
+#     name="q_network_model",
+#     model_path="q_network.onnx",
+#     model_format="onnx"
+# )
+# deployment = client.deployments.create(model_id=model.id)
 
 # Replace Q-table action selection with DNN inference via pytorch
 def select_action_with_dnn(state, epsilon):
@@ -67,7 +72,7 @@ def select_action_with_cerebras(state, epsilon):
 
 if __name__ == "__main__":
     # Simulation setup
-    num_agents = 2
+    num_agents = 10
     max_tokens = 5 
     token_manager = TokenManager(base_price=1.0)
     agents = [Agent(i, max_tokens) for i in range(num_agents)]
@@ -103,7 +108,7 @@ if __name__ == "__main__":
             
             for agent in agents:
                 state = int(env.states[agent.id])
-                action = select_action_with_cerebras(state, epsilon)
+                action = select_action_with_dnn(state, epsilon)
                 agent.record_low_power_mode(action)
                 actions.append(action)
 
@@ -127,9 +132,9 @@ if __name__ == "__main__":
         print(f"Episode {episode + 1} Reward: {total_episode_rewards:.2f}")
         episodes_rewards.append(total_episode_rewards)
 
-    # Save data to a file for external training
-    with open("collected_data_test.pkl", "wb") as f:
-        pickle.dump(collected_data, f)   
+    # # Save data to a file for external training
+    # with open("collected_data_test.pkl", "wb") as f:
+    #     pickle.dump(collected_data, f)   
 
     print("Training complete!")
     # for agent in agents:
@@ -138,7 +143,7 @@ if __name__ == "__main__":
     plt.plot(episodes_rewards)
     plt.xlabel("Episode")
     plt.ylabel("Total Reward")
-    plt.title("Total Reward per Episode")
+    plt.title("Total Reward per Episode (DQN)")
     plt.show()
     
     # plt.plot(epochs_rewards)

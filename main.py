@@ -7,7 +7,7 @@ import pickle
 
 if __name__ == "__main__":
     # Simulation setup
-    num_agents = 2
+    num_agents = 10
     max_tokens = 5 
     token_manager = TokenManager(base_price=1.0)
     agents = [Agent(i, max_tokens) for i in range(num_agents)]
@@ -78,7 +78,7 @@ if __name__ == "__main__":
     plt.plot(episodes_rewards)
     plt.xlabel("Episode")
     plt.ylabel("Total Reward")
-    plt.title("Total Reward per Episode")
+    plt.title("Total Reward per Episode (Q-learning)")
     plt.show()
     
     # plt.plot(epochs_rewards)
